@@ -1,0 +1,4 @@
+flask
+africastalking
+python-dotenv
+flask-cors
