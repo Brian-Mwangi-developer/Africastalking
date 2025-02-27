@@ -44,13 +44,13 @@ app.post('/voice', (req, res) => {
   res.send(response.toString());
 });
 
-// Set up route to handle user input
+// Set up route to handle incoming calls
 app.post('/voice/callback', async (req, res) => {
   try {
     let callActions, responseAction
     console.log(req)
     callActions = ATVoice.ongea({
-      textPrompt: `Wecome to ongea services. Press 1 to report hunger, press 2 to report Water Shortage, Press 3 for medical emergency. After selection option, press the hash key`,
+      textPrompt: `Welcome to ongea services. Press 1 to report hunger, press 2 to report Water Shortage, Press 3 for medical emergency. After selection option, press the hash key`,
       finishOnKey: '#',
       timeout: 7,
       callbackUrl: `${APP_URL}/ongea`

@@ -1,20 +1,18 @@
 from flask import Flask, request, Response
 import os
+from dotenv import load_dotenv
 from utils.helper import VoiceHelper
 
+load_dotenv()
 app = Flask(__name__)
 
 # Load environment variables
-AT_apiKey = os.getenv("API_KEY")
-AT_username = os.getenv("USERNAME")
+AT_apiKey = os.getenv("AFRICASTALKING_API_KEY")
+AT_username = os.getenv("AFRICASTALKING_USERNAME")
 AT_virtualNumber = os.getenv("VIRTUAL_NUMBER")
-APP_URL = os.getenv("URL")
+APP_URL = "http://localhost:5001"
 
-ATVoice = VoiceHelper({
-    "AT_apiKey": AT_apiKey,
-    "AT_username": AT_username,
-    "AT_virtualNumber": AT_virtualNumber
-})
+ATVoice = VoiceHelper(AT_apiKey, AT_username, AT_virtualNumber)
 
 
 @app.route("/voice", methods=["POST"])
@@ -24,7 +22,7 @@ def voice():
 
     response = f"<?xml version='1.0' encoding='UTF-8'?><Response>"
     response += f"<Say>Welcome to my voice application! Press 1 for English or 2 for Swahili.</Say>"
-    response += f"<CollectDigits timeout='10' finishOnKey='#' numDigits='1' callbackUrl='{APP_URL}/voice/callback'/>"
+    response += f"<CollectDigits timeout='10' finishOnKey='#' numDigits='1' callbackUrl=f'{APP_URL}/voice/callback'/>"
     response += "</Response>"
 
     return Response(response, mimetype="text/xml")
@@ -33,12 +31,14 @@ def voice():
 @app.route("/voice/callback", methods=["POST"])
 def voice_callback():
     try:
-        call_actions = ATVoice.ongea({
-            "textPrompt": "Welcome to Ongea services. Press 1 to report hunger, press 2 to report water shortage, press 3 for medical emergency. After selection, press the hash key",
-            "finishOnKey": "#",
-            "timeout": 7,
-            "callbackUrl": f"{APP_URL}/ongea"
-        })
+        callback_url = f"{APP_URL}/ongea"
+        print(f"DEBUG: callbackUrl = {callback_url}")
+        call_actions = ATVoice.ongea(
+            textPrompt="Welcome to Ongea services. Press 1 to report hunger, press 2 to report water shortage, press 3 for medical emergency. After selection, press the hash key",
+            finishOnKey="#",
+            timeout=7,
+            callbackUrl=callback_url  # ✅ Correctly passing the callback URL
+        )
         response_action = f"<?xml version='1.0' encoding='UTF-8'?><Response>{call_actions}</Response>"
         return Response(response_action, mimetype="text/xml")
     except Exception as e:
@@ -125,5 +125,5 @@ def generate_response(pressed_key, responses):
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))
+    port = int(os.getenv("PORT", 5001))
     app.run(host="0.0.0.0", port=port)

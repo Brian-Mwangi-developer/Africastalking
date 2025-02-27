@@ -7,15 +7,17 @@ class VoiceHelper:
         self.AT_username = AT_username
         self.AT_virtualNumber = AT_virtualNumber
 
-        self.ATVOICE = africastalking.AfricasTalkingClient(
+        africastalking.initialize(
             api_key=self.AT_apiKey,
             username=self.AT_username
-        ).voice
+        )
+        self.ATVOICE = africastalking.Voice
 
-    def ongea(self, textPrompt=None, audioFile=None, timeout=10, fallbackNotice=None, finishOnKey="#", callbackUrl=None):
-        if not textPrompt and not audioFile:
+    def ongea(self, textPrompt=None, timeout=10, fallbackNotice=None, finishOnKey="#", callbackUrl=None):
+        print("Callback from voice helper",callbackUrl)
+        if not textPrompt :
             raise ValueError(
-                "Provide at least one: 'textPrompt' or 'audioFile'")
+                "Provide at least one: 'textPrompt' ")
 
         if not callbackUrl:
             raise ValueError("Provide 'callbackUrl' for ongea")
@@ -25,8 +27,6 @@ class VoiceHelper:
 
         if textPrompt:
             callAction += f'<Say>{textPrompt}</Say>'
-        elif audioFile:
-            callAction += f'<Play>{audioFile}</Play>'
 
         callAction += f'</GetDigits><Say>{fallbackNotice}</Say>'
         return callAction
@@ -49,3 +49,4 @@ class VoiceHelper:
             f'playBeep="true" callbackUrl="{audioProcessingUrl}"><Say>{introductionText}</Say></Record>'
         )
         return callActions
+

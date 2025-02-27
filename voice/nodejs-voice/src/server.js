@@ -3,7 +3,9 @@ const cors = require('cors')
 const fs = require('fs');
 const { response } = require('express');
 const {VoiceHelper} = require('../utils/voiceHelper');
+require("dotenv").config({ path: '.env' })
 const app = express();
+
 app.use(cors());
 
 let AT_apiKey = process.env.AFRICASTALKING_API_KEY
