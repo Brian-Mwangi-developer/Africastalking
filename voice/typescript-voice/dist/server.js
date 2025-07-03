@@ -12,9 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const africastalking_1 = __importDefault(require("africastalking"));
+const express_1 = __importDefault(require("express"));
 const helper_1 = require("./utils/helper");
 dotenv_1.default.config({ path: '.env' });
 const app = (0, express_1.default)();
@@ -29,19 +28,24 @@ const ATVoice = new helper_1.VoiceHelper({
 });
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
-app.post('/voice', (req, res) => {
-    const { sessionId, callerNumber } = req.body;
-    const response = new africastalking_1.default.voice.Response();
-    response.say('Welcome to my voice application! Press 1 for English or 2 for Swahili.');
-    response.collectDigits({
-        timeout: 10,
-        finishOnKey: '#',
-        numDigits: 1,
-        callbackUrl: '',
-    });
-    res.set('Content-Type', 'text/plain');
-    res.send(response.toString());
-});
+const credentials = {
+    apiKey: AT_apiKey,
+    username: AT_username,
+};
+// app.post('/voice', (req: Request, res: Response) => {
+//     const { sessionId, callerNumber } = req.body;
+//     const africastalkingVoice = africastalking(credentials);
+//     const response = new africastalkingVoice.VOICE
+//     response.say('Welcome to my voice application! Press 1 for English or 2 for Swahili.');
+//     response.collectDigits({
+//         timeout: 10,
+//         finishOnKey: '#',
+//         numDigits: 1,
+//         callbackUrl: '',
+//     });
+//     res.set('Content-Type', 'text/plain');
+//     res.send(response.toString());
+// });
 app.post('/voice/callback', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(req.body);

@@ -13,7 +13,7 @@ class VoiceHelper {
         this.ATVOICE = (0, africastalking_1.default)({
             apiKey: this.AT_apiKey,
             username: this.AT_username,
-        }).VOICE;
+        }).voice;
     }
     ongea({ textPrompt, audioFile, timeout = 10, fallbackNotice = "Sorry, we didn't get any response, goodbye", finishOnKey, callbackUrl, }) {
         if (!textPrompt && !audioFile) {

@@ -2,3 +2,5 @@ flask
 africastalking
 python-dotenv
 flask-cors
+fastapi
+uvicorn

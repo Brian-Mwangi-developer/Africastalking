@@ -1,6 +1,5 @@
-import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
-import africastalking from 'africastalking';
+import express, { Request, Response } from 'express';
 import { VoiceHelper } from './utils/helper';
 
 dotenv.config({ path: '.env' });
@@ -21,21 +20,26 @@ const ATVoice = new VoiceHelper({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.post('/voice', (req: Request, res: Response) => {
-    const { sessionId, callerNumber } = req.body;
-    const response = new africastalking.voice.Response();
+const credentials = {
+    apiKey: AT_apiKey,
+    username: AT_username,
+}
+// app.post('/voice', (req: Request, res: Response) => {
+//     const { sessionId, callerNumber } = req.body;
+//     const africastalkingVoice = africastalking(credentials);
+//     const response = new africastalkingVoice.VOICE
 
-    response.say('Welcome to my voice application! Press 1 for English or 2 for Swahili.');
-    response.collectDigits({
-        timeout: 10,
-        finishOnKey: '#',
-        numDigits: 1,
-        callbackUrl: '',
-    });
+//     response.say('Welcome to my voice application! Press 1 for English or 2 for Swahili.');
+//     response.collectDigits({
+//         timeout: 10,
+//         finishOnKey: '#',
+//         numDigits: 1,
+//         callbackUrl: '',
+//     });
 
-    res.set('Content-Type', 'text/plain');
-    res.send(response.toString());
-});
+//     res.set('Content-Type', 'text/plain');
+//     res.send(response.toString());
+// });
 
 app.post('/voice/callback', async (req: Request, res: Response): Promise<any> => {
     try {
@@ -55,7 +59,7 @@ app.post('/voice/callback', async (req: Request, res: Response): Promise<any> =>
 });
 
 const handleSelection = (req: Request, res: Response, prompt: string, callbackPath: string) => {
-    let callActions: string ='';
+    let callActions: string = '';
     let responseAction: string;
     let done = false;
     let pressedKey = req.body.dtmfDigits;
@@ -101,8 +105,8 @@ app.post('/water', (req: Request, res: Response) => {
     handleSelection(req, res, 'Your regional office will get back to you about fixing your issue', '');
 });
 
-app.post('/emergency', async(req: Request, res: Response):Promise<any> => {
-    let callActions: string ='';
+app.post('/emergency', async (req: Request, res: Response): Promise<any> => {
+    let callActions: string = '';
     let responseAction: string;
     let done = false;
     let pressedKey = req.body.dtmfDigits;
@@ -134,7 +138,7 @@ app.post('/emergency', async(req: Request, res: Response):Promise<any> => {
     return res.send(responseAction);
 });
 
-app.post('/emergency-response', async(req: Request, res: Response):Promise<any> => {
+app.post('/emergency-response', async (req: Request, res: Response): Promise<any> => {
     console.log('User recording response', req.body);
     const callActions = ATVoice.saySomething({
         speech: 'Your audio response has been captured. We will send officers to your location. Thank you.',

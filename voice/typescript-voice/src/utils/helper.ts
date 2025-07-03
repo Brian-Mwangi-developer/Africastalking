@@ -40,7 +40,7 @@ class VoiceHelper {
         this.ATVOICE = africastalking({
             apiKey: this.AT_apiKey,
             username: this.AT_username,
-        }).VOICE;
+        }).voice as any;
     }
 
     ongea({

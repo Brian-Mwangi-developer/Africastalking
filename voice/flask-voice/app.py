@@ -1,6 +1,8 @@
-from flask import Flask, request, Response
 import os
+
 from dotenv import load_dotenv
+from flask import Flask, Response, request
+
 from utils.helper import VoiceHelper
 
 load_dotenv()
@@ -34,7 +36,7 @@ def voice_callback():
         callback_url = f"{APP_URL}/ongea"
         print(f"DEBUG: callbackUrl = {callback_url}")
         call_actions = ATVoice.ongea(
-            textPrompt="Welcome to Ongea services. Press 1 to report hunger, press 2 to report water shortage, press 3 for medical emergency. After selection, press the hash key",
+            textPrompt="Welcome to Ongea services. Press 1 to report hunger, press 2 to report water shortage, press 3 for medical emergency.",
             finishOnKey="#",
             timeout=7,
             callbackUrl=callback_url  # ✅ Correctly passing the callback URL
@@ -48,10 +50,60 @@ def voice_callback():
 
 @app.route("/ongea", methods=["POST"])
 def ongea():
-    pressed_key = request.form.get("dtmfDigits")
-    response_action = handle_selection(
-        pressed_key, "region", "water", "emergency")
-    return Response(response_action, mimetype="text/xml")
+    try:
+        pressed_key = request.form.get("dtmfDigits")
+        print(f"DEBUG: Pressed key = {pressed_key}")
+
+        if pressed_key in [None, "undefined"]:
+            return Response("", status=204)
+
+        call_actions = None
+        done = False
+
+        if pressed_key.isdigit():
+            pressed_key = int(pressed_key)
+            print(f"Number pressed: {pressed_key}")
+
+            if pressed_key == 1:
+                call_actions = ATVoice.ongea(
+                    textPrompt="Connecting you to emergency services.",
+                    finishOnKey="#",
+                    timeout=15,
+                    callbackUrl=f"{APP_URL}/emergency"
+                )
+                done = True
+            elif pressed_key == 2:
+                call_actions = ATVoice.ongea(
+                    textPrompt="Connecting you to the water department.",
+                    finishOnKey="#",
+                    timeout=15,
+                    callbackUrl=f"{APP_URL}/water"
+                )
+                done = True
+            elif pressed_key == 3:
+                call_actions = ATVoice.ongea(
+                    textPrompt="Connecting you to the regional health officer.",
+                    finishOnKey="#",
+                    timeout=15,
+                    callbackUrl=f"{APP_URL}/region"
+                )
+                done = True
+            else:
+                call_actions = ATVoice.saySomething({
+                    "speech": "Sorry, our system has some difficulty."
+                })
+
+        if not done:
+            call_actions = ATVoice.saySomething({
+                "speech": "Sorry, you have pressed an invalid key."
+            })
+
+        response_action = f"<?xml version='1.0' encoding='UTF-8'?><Response>{call_actions}</Response>"
+        return Response(response_action, mimetype="text/xml")
+
+    except Exception as e:
+        print({"error": str(e)})
+        return Response(status=500)
 
 
 @app.route("/region", methods=["POST"])
