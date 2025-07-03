@@ -22,11 +22,13 @@ def send_sms(request):
             data = json.loads(request.body)
             phone_number = data.get("phoneNumber")
 
+
+# the Phone number should start with country code + 254712345678 -> format
             if not phone_number:
                 return JsonResponse({"message": "Phone number not found"}, status=400)
 
             response = sms.send(
-                sender_id="AFTKNG",
+                sender_id="AFTKNG", # your Alphanumeric sender ID
                 message="Hey, Welcome to Africa's Talking!",
                 recipients=[phone_number],
                

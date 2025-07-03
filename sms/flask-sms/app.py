@@ -28,6 +28,8 @@ def send_sms():
     data = request.get_json()
     phone_number = data.get("phoneNumber")
 
+
+# the Phone number should start with country code + 254712345678 -> format
     if not phone_number:
         return jsonify({"message": "Phone number not found"}), 400
 

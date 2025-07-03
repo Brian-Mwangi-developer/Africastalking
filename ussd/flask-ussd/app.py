@@ -10,6 +10,8 @@ CORS(app)
 response = ""
 
 
+# route to handle USSD requests
+# Make sure on the sandbox you have set the URL to https://your-server-url/ussd
 @app.route('/ussd', methods=['POST', 'GET'])
 def ussd_callback():
   global response
@@ -25,6 +27,7 @@ def ussd_callback():
     response = "CON Choose account information you want to view \n"
     response += "1. Account number \n"
     response += "2. Account balance"
+    # 1*1 means the user selected option 1 in the first menu then option 1 in the second menu
   elif text == '1*1':
     accountNumber = "ACC1001"
     response = "END Your account number is " + accountNumber

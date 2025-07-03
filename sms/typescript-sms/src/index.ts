@@ -23,7 +23,7 @@ const sms = at.SMS
 // Endpoint to send a message
 app.post('/send-sms', async(req: Request, res: Response):Promise<any> => {
     const { phoneNumber } = req.body;
-
+    //the Phone number should start with country code +254712345678 ->format
     if (!phoneNumber) {
         return res.status(400).json({ message: 'Phone number not found 4' });
     }
